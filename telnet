@@ -1,0 +1,70 @@
+#!/bin/bash
+#20160424 add some notes
+
+now=`date '+%Y-%m-%d>%H:%M:%S'`
+#get parms
+parms=`echo $QUERY_STRING`
+if [ "$parms" == ""  ];then
+	printf 'Content-Type: text/html\r\n\r\n'
+	echo "no parms"
+	exit 0
+else
+	user=`echo $parms|cut -d '@' -f1`
+	ip=`echo $parms|cut -d '@' -f2`
+	devs=`echo $parms|cut -d '@' -f3|sed 's/\,/\ /g'`
+fi
+
+#start auto checkPort
+autocheck=`ps -ef|grep checkPort|grep -v 'grep'`
+if [ "$autocheck" == "" ];then
+	/opt/iou/cgi-bin/checkPort 1>/dev/null &
+	echo "start auto check $now">>telnet.log
+fi
+
+#check for user
+userexist=`awk '/'$user'/{print $2}' telnet.conf`
+if [ "$userexist" != "" ];then
+	./telnet_kill $userexist 1>/dev/null	
+fi
+
+#generate userid
+userid=`tail -1 telnet.conf| awk '{print $1}'`
+userid=`expr $userid + 1`
+if [ $userid -gt 50 ];then
+	$userid=`expr $userid - 50`
+fi
+
+#generate port.conf, and output the html
+baseport=`expr $userid \* 50 + 25000`
+touch port$userid.conf
+: > port$userid.conf
+printf 'Content-Type: text/html\r\n\r\n'
+cat <<EOF
+<html>
+<head>
+<title>Telnet Shell</title>
+</head>
+<body>
+EOF
+for dev in $devs
+do
+	lport=`expr $baseport + $dev`
+	rport=`expr $dev + 2000`
+	echo "0.0.0.0 $lport 192.168.1.$ip $rport">>port$userid.conf
+	echo "<h1>$dev-$lport</h1>"
+done
+
+cat <<EOF
+</body>
+</html>
+EOF
+
+#rinetd
+/opt/iou/cgi-bin/rinetd -c port$userid.conf 1>/dev/null
+pid=`ps -ef|grep port$userid.conf|grep -v grep|awk '{print $2}'`
+if [ "$pid" == "" ];then
+	pid=0
+fi
+echo "$userid $user $ip $pid $now">>telnet.conf
+echo "$user in pid=$pid $now">>telnet.log
+

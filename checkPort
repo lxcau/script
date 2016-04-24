@@ -1,0 +1,41 @@
+#!/bin/bash
+#20160424 add some notes
+
+#kill rinetd by user name, $1 is a user name
+function killUser {
+userid=`awk '/'$1'/{print $1}' telnet.conf`
+if [ "$userid" != "" ];then
+        pid=`awk '/'$1'/{print $4}' telnet.conf`
+        kill $pid
+        sed -i '/'$1'/d' telnet.conf
+        rm -f port$userid.conf 2>/dev/null
+	echo "$1 timeout kill:$pid $now">>telnet.log
+fi
+}
+
+
+#run in every 10 mins
+while (sleep 600)
+do
+now=`date '+%Y-%m-%d>%H:%M:%S'`
+echo "auto check in 10mins">>telnet.log
+endhour=`echo $now|cut -d '>' -f2|cut -d ':' -f1`
+endmin=`echo $now|cut -d ':' -f2`
+endtime=`expr $endhour \* 60 + $endmin`
+users=`awk '{print $2}' telnet.conf`
+if [ "$users" == "" ];then  #if there is no user in, then end this script
+	echo 'no users, shutdown auto check'>>telnet.log
+	exit 0
+fi
+for user in $users
+do
+	starttime=`awk '/'$user'/{print $5}' telnet.conf`
+	starthour=`echo $starttime|cut -d '>' -f2|cut -d ':' -f1`
+	startmin=`echo $starttime|cut -d ':' -f2`
+	starttime=`expr $starthour \* 60 + $startmin`
+	holdtime=`expr $endtime - $starttime`
+	if [ $holdtime -gt 40 ];then
+		killUser $user
+	fi
+done
+done
