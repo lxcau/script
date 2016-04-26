@@ -1,0 +1,45 @@
+#!/bin/bash
+
+function connect {
+	printf 'Content-Type: text/html\r\n\r\n'
+	cat << EOF
+<html>
+	<head>
+		<title>Telnet Shell</title>
+	</head>
+	<body>
+		<h1>do not take with parms<h1>
+	</body>
+</html>	
+EOF
+}
+function default {
+	eth=`ifconfig -a|grep eth|cut -d " " -f 1,11`
+	printf 'Content-Type: text/html\r\n\r\n'
+	cat << EOF
+<html>
+	<head>
+		<title>Telnet Shell</title>
+	</head>
+	<body>
+		<pre>$eth</pre>
+	</body>
+</html>	
+EOF
+}
+
+
+case "${REQUEST_METHOD}" in
+	GET)
+		# Retrieve CGI parameter, then start shellinabox with this address
+		parms=`echo $QUERY_STRING`
+		if [ "$parms" != "" ]; then
+			connect  
+		else
+			default
+		fi
+	;;
+	*)
+		default
+	;;
+esac  

@@ -1,0 +1,39 @@
+#!/bin/bash
+
+function killUser {
+userid=`awk '/'$1'/{print $1}' telnet.conf`
+if [ "$userid" != "" ];then
+        pid=`awk '/'$1'/{print $4}' telnet.conf`
+        kill $pid 2>/dev/null 
+        sed -i '/'$1'/d' telnet.conf
+        rm -f port$userid.conf 2>/dev/null
+	now=`date '+%Y-%m-%d>%H:%M:%S'`
+	echo "$1 out kill:$pid $now">>telnet.log
+	echo $pid
+else
+	echo 0
+fi
+}
+
+if [ "$1" != "" ];then
+	user=`echo $1`
+elif [ "$QUERY_STRING" != "" ];then
+	user=`echo $QUERY_STRING`
+else
+	printf 'Content-Type: text/html\r\n\r\n'
+	echo "no user"
+	exit 0	
+fi	
+
+killed=`killUser $user`
+printf 'Content-Type: text/html\r\n\r\n'
+cat <<EOF
+<html>
+<head>
+<title>telnet shell</title>
+</head>
+<body>
+echo "<h1>kill $killed</h1>"
+echo '</body>'
+echo '</html>'
+EOF
