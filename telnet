@@ -2,8 +2,11 @@
 #20160424 add some notes
 
 now=`date '+%Y-%m-%d>%H:%M:%S'`
-#get parms
-parms=`echo $QUERY_STRING`
+#get parms, parms must be like this: user@ip@devs, devs should be the id of devices, separated by ','
+parms=`echo $1`
+if [ "parms" == "" ];then
+	parms=`echo $QUERY_STRING`
+fi
 if [ "$parms" == ""  ];then
 	printf 'Content-Type: text/html\r\n\r\n'
 	echo "no parms"
@@ -11,7 +14,7 @@ if [ "$parms" == ""  ];then
 else
 	user=`echo $parms|cut -d '@' -f1`
 	ip=`echo $parms|cut -d '@' -f2`
-	devs=`echo $parms|cut -d '@' -f3|sed 's/\,/\ /g'`
+	devs=`echo $parms|cut -d '@' -f3|sed 's/\,/\ /g'`#get devs, and replace the ',' with ' '
 fi
 
 #start auto checkPort
@@ -27,14 +30,14 @@ if [ "$userexist" != "" ];then
 	./telnet_kill $userexist 1>/dev/null	
 fi
 
-#generate userid
+#generate userid, no more than 50 users
 userid=`tail -1 telnet.conf| awk '{print $1}'`
 userid=`expr $userid + 1`
 if [ $userid -gt 50 ];then
 	$userid=`expr $userid - 50`
 fi
 
-#generate port.conf, and output the html
+#generate port.conf, and output the http stream
 baseport=`expr $userid \* 50 + 25000`
 touch port$userid.conf
 : > port$userid.conf
@@ -51,7 +54,7 @@ do
 	lport=`expr $baseport + $dev`
 	rport=`expr $dev + 2000`
 	echo "0.0.0.0 $lport 192.168.1.$ip $rport">>port$userid.conf
-	echo "<h1>$dev-$lport</h1>"
+	echo "<h1>$dev-$lport</h1>" #output to the html
 done
 
 cat <<EOF
