@@ -1,7 +1,9 @@
 #!/bin/bash
-rm -rf /tmp/iou/lab_1/dev*
+#2016-04-28 add some notes
+#delete the files for lab_1, before start a new lab, this script should be excuted
+rm -rf /tmp/iou/lab_1/*
 flag=`ls /tmp/iou/lab_1 | grep dev`
-if [ flag="" ]; then
+if [ "$flag" = "" ]; then
 	back="succeed"
 else
 	back="failed"
