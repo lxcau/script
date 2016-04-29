@@ -1,10 +1,10 @@
 #!/bin/bash
-#20160429 add some notes
 #input: user@ip (ssh $user@192.168.1.$ip)
 #request method: get
+#20160429 add some notes
 
 function connect {
-	/opt/iou/bin/shellinaboxd --cgi=20000-25000  -s "/:$(id -u):$(id -g):HOME:ssh $user@192.168.1.$ip "
+	/opt/iou/bin/shellinaboxd --cgi=20000-25000  -s "/:$(id -u):$(id -g):HOME:ssh $1@192.168.1.$2 "
 	if [ $? -ne 0 ]; then
 		cannot_connect
 	fi
