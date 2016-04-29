@@ -1,5 +1,7 @@
 #!/bin/bash
-#20160424 add some notes
+#20160429 add some notes
+#telnet.conf: recording users, ports, pids, and time
+#portx.conf: the conf file for rinetd
 
 now=`date '+%Y-%m-%d>%H:%M:%S'`
 #get parms, parms must be like this: user@ip@devs, devs should be the id of devices, separated by ','
@@ -38,6 +40,7 @@ if [ $userid -gt 50 ];then
 fi
 
 #generate port.conf, and output the http stream
+#port range: 25000-30000
 baseport=`expr $userid \* 50 + 25000`
 touch port$userid.conf
 : > port$userid.conf
@@ -51,8 +54,8 @@ cat <<EOF
 EOF
 for dev in $devs
 do
-	lport=`expr $baseport + $dev`
-	rport=`expr $dev + 2000`
+	lport=`expr $baseport + $dev` #local port
+	rport=`expr $dev + 2000` #remote port in iou
 	echo "0.0.0.0 $lport 192.168.1.$ip $rport">>port$userid.conf
 	echo "<h1>$dev-$lport</h1>" #output to the html
 done
