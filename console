@@ -1,8 +1,12 @@
 #!/bin/bash
+#20160429 add some notes
+#input: ip@put
+#method: get
+#use shellinaboxd to make a connection through web by telnet
 
 function connect {
 #	printf 'Content-Type: text/html\r\n\r\n'
-/opt/iou/bin/shellinaboxd --cgi=20000-25000 --localhost-only -s "/:$(id -u):$(id -g):HOME:telnet 192.168.1.$ip $port"
+/opt/iou/bin/shellinaboxd --cgi=20000-25000  -s "/:$(id -u):$(id -g):HOME:telnet 192.168.1.$ip $port" #make sure apache have permission to the shellinaboxd, including the permission to cd into /opt/iou/bin
 	if [ $? -ne 0 ]; then
 		cannot_connect
 	fi

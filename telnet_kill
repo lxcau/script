@@ -1,23 +1,26 @@
 #!/bin/bash
+#20160429 add some notes
+#input: user
+#request method: get
 
-function killUser {
+function killUser { #kill a rinetd process by user
 userid=`awk '/'$1'/{print $1}' telnet.conf`
 if [ "$userid" != "" ];then
-        pid=`awk '/'$1'/{print $4}' telnet.conf`
+        pid=`awk '/'$1'/{print $4}' telnet.conf` #get pid from telnet.conf
         kill $pid 2>/dev/null 
         sed -i '/'$1'/d' telnet.conf
         rm -f port$userid.conf 2>/dev/null
 	now=`date '+%Y-%m-%d>%H:%M:%S'`
 	echo "$1 out kill:$pid $now">>telnet.log
-	echo $pid
+	echo $pid #return pid of rinetd
 else
 	echo 0
 fi
 }
 
-if [ "$1" != "" ];then
+if [ "$1" != "" ];then #called by shell, input through $1
 	user=`echo $1`
-elif [ "$QUERY_STRING" != "" ];then
+elif [ "$QUERY_STRING" != "" ];then #called by cgi, input through QUERY_STRING
 	user=`echo $QUERY_STRING`
 else
 	printf 'Content-Type: text/html\r\n\r\n'

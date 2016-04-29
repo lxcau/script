@@ -2,6 +2,8 @@
 #20160429 add some notes
 #telnet.conf: recording users, ports, pids, and time
 #portx.conf: the conf file for rinetd
+#input: user@ip@devs
+#request method: get
 
 now=`date '+%Y-%m-%d>%H:%M:%S'`
 #get parms, parms must be like this: user@ip@devs, devs should be the id of devices, separated by ','
