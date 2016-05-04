@@ -1,8 +1,10 @@
 #! /bin/bash
-#2016-04-28
+
 #check the iourc file, if the iourc do not contain a correct hostname, use keygen to make a new iourc
+#change the "cut -d '=' -f1" to "cut -d ' ' -f1"
+#recent change 20160504
 host=`hostname`
-iourc=`cat /opt/iou/bin/iourc |awk 'NR>1'|cut -d "=" -f 1`
+iourc=`tail -1 /opt/iou/bin/iourc | cut -d " " -f 1`
 if [ "$iourc" != "$host" ]
 then
 	echo "iourc is not ok, making a new iou license..."
