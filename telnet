@@ -34,7 +34,7 @@ if [ "$userexist" != "" ];then
 	./telnet_kill $userexist 1>/dev/null	
 fi
 
-#generate userid, no more than 50 users
+#generate userid, no more than 50 users, userid is range frome 1 to 50
 userid=`tail -1 telnet.conf| awk '{print $1}'`
 userid=`expr $userid + 1`
 if [ $userid -gt 50 ];then
