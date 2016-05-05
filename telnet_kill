@@ -3,7 +3,7 @@
 #input: user
 #request method: get
 
-function killUser { #kill a rinetd process by user
+function killUser { #kill a rinetd process by user name
 userid=`awk '/'$1'/{print $1}' telnet.conf`
 if [ "$userid" != "" ];then
         pid=`awk '/'$1'/{print $4}' telnet.conf` #get pid from telnet.conf
@@ -18,9 +18,10 @@ else
 fi
 }
 
+#get user name
 if [ "$1" != "" ];then #called by shell, input through $1
 	user=`echo $1`
-elif [ "$QUERY_STRING" != "" ];then #called by cgi, input through QUERY_STRING
+elif [ "$QUERY_STRING" != "" ];then #called by cgi, input through $QUERY_STRING
 	user=`echo $QUERY_STRING`
 else
 	printf 'Content-Type: text/html\r\n\r\n'
