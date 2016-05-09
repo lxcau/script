@@ -1,0 +1,22 @@
+FOR IOU-SERVER
+    /opt/iou/cgi-bin/
+        console
+        ssh
+        telnet
+        telnet_kill
+        checkPort
+        shellinaboxd
+        rinetd
+    /opt/iou/html/
+        up.php
+    
+FOR IOU
+    /opt/iou/cgi-gin
+        mac_eth
+        clear_dev
+        CiscoIOUKeygen.py
+        check-for-iourc.sh #need to be excuted on boot
+    /opt/iou/html
+        getPcaps.php
+    /etc/httpd/conf.d/
+        iou.conf
